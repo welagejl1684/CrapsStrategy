@@ -40,23 +40,19 @@ class Craps():
     def before_point(self):
         self.place_bet(['pass'], 10)
         self.roll = self.roll_dice()
-        #print(roll)
-        if(self.roll == 7 or self.roll == 11):
+        print("start")
+        if(self.roll in [7,11]):
             self.bank_roll = self.bank_roll + self.table['pass']
-        elif(self.roll != 2 and self.roll != 3 and self.roll != 12):
+        if(self.roll not in [2,3,7,11,12]):
             self.point = self.roll  
             self.place_strat()
-        else:
-            self.table['pass'] = 0 
-        #self.display_table()
-        self.play_hand()
+        
+        self.table['pass'] = 0 
 
     def after_point(self): 
         self.next_roll = False
         
-        #self.display_table()
         self.roll = self.roll_dice()
-        #print(roll)
         self.payout(self.roll)
         if(not self.coverage and self.field_hit and self.point != 0):
             self.field_farm()
@@ -67,7 +63,7 @@ class Craps():
             self.restart(False)
             return 
         
-        if(roll == 4 or roll == 10):
+        if(roll in [4,10]):
             self.win = self.win + (self.table[str(roll)] / 5 ) * 9
             self.bank_roll = self.bank_roll + (self.table[str(roll)] / 5) * 9 
             
@@ -79,18 +75,18 @@ class Craps():
         elif(roll in [6,8]):
             self.win = self.win + (self.table[str(roll)] / 6) * 7
             self.bank_roll = self.bank_roll + (self.table[str(roll)] / 6) * 7
-        
-        elif(roll not in range(5,9)):
-            if(roll == 2 or roll == 12):
-                self.field_hit = self.table['field'] != 0  
-                self.bank_roll = self.bank_roll + self.table['field'] * 3 
-                self.win = self.win + self.table['field'] * 3        
-                self.table['field'] = 0 
-            else:
-                self.field_hit = self.table['field'] != 0  
-                self.bank_roll = self.bank_roll + self.table['field'] * 2 
-                self.win = self.win + self.table['field'] * 2
-                self.table['field'] = 0
+
+        if(roll in [2,12]):
+            self.field_hit = self.table['field'] != 0  
+            self.bank_roll = self.bank_roll + self.table['field'] * 3 
+            self.win = self.win + self.table['field'] * 3        
+            self.table['field'] = 0 
+
+        if(roll in [4,9,10,11]):
+            self.field_hit = self.table['field'] != 0  
+            self.bank_roll = self.bank_roll + self.table['field'] * 2 
+            self.win = self.win + self.table['field'] * 2
+            self.table['field'] = 0
         
         if(roll == self.point):
             self.bank_roll = self.bank_roll + self.table['pass'] * 2 
@@ -98,8 +94,8 @@ class Craps():
 
     def field_farm(self):
         for idx in self.table:
-            if(self.table[idx] != 'field' and self.table[idx] == 0):
-                if(self.table[idx] in [4, 5, 9, 10]):
+            if(idx not in  ['field','pass'] and self.table[idx] == 0):
+                if(idx in ['4', '5', '9', '10']):
                     self.place_bet([idx], 5)  
                 else:
                     self.place_bet([idx], 6)
@@ -126,9 +122,6 @@ class Craps():
             self.place_bet([random.choice(choice_bet)], 5)
             self.place_bet(['6'], 6)
     
-    def set_next_roll(self):
-        next_roll = True 
-
     def restart(self, win):
         self.win = 0
         self.bet = 0
@@ -149,15 +142,6 @@ class Craps():
     
         self.play_hand()
     
-    def display_table(self):
-        for idx in self.table:
-            print(idx + ': ', str(self.table[idx]), ' ')
-        print("Bank roll: ", self.bank_roll)
-        print("Point:", self.point)
-        print("Win:", self.win)
-        print("Bet:", self.bet)
-        time.sleep(5)
-
     def play_hand(self):
         if(self.rounds == 0):
             return
@@ -169,4 +153,5 @@ class Craps():
         
         if(self.bank_roll <= 0):
             print("FAILURE")
-            return 
+            return
+             
