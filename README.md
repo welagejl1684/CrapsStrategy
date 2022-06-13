@@ -1,7 +1,7 @@
 # CrapsStrategy
 
 
-As a degenerate gambler and "compitent" "software" "engineer", I set out to create a simple program to emulate a betting strategy for the game of Craps -- the only good gambling venture that is not poker or your life. 
+As a degenerate gambler and "software" "engineer", I set out to create a simple program to emulate a betting strategy for the game of Craps -- the only good gambling venture that is not poker or your life. 
 
 To run this program just run: python gui.py on a command line
 
