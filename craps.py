@@ -51,6 +51,10 @@ class Craps():
 
     def after_point(self) -> None: 
         self.roll = self.roll_dice()
+        if(self.roll == 7):
+            self.restart(False)
+            return 
+        
         self.payout()
         
         if(not self.coverage and self.field_hit and self.point != 0):
@@ -58,10 +62,6 @@ class Craps():
               
     
     def payout(self) -> None:
-        if(self.roll == 7):
-            self.restart(False)
-            return 
-        
         if(self.roll in [4,10]):
             self.win = self.win + (self.table[str(self.roll)] / 5 ) * 9
             self.bank_roll = self.bank_roll + (self.table[str(self.roll)] / 5) * 9 
@@ -127,7 +127,7 @@ class Craps():
         self.point = 0 
         self.coverage = False 
         self.rounds = self.rounds - 1
-
+         
         if(next_round_point):
             for idx in self.table:
                 self.bank_roll = self.bank_roll + self.table[idx] 
