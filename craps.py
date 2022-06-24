@@ -3,21 +3,24 @@ import random
 import time
 
 class Craps(): 
-    def __init__(self, rounds):
+    def __init__(self, rounds, bankroll, strategy):
         self.table = {
             'pass': 0, '4':0, '5':0, '6':0, '8':0, 
-            '9':0, '10':0, 'field':0
+            '9':0, '10':0, 'field':0, 'come': 0
         }
 
-        self.bank_roll = 100 
+        self.bank_roll = int(bankroll) 
         self.point = 0
         self.win = 0
         self.bet = 0 
         self.roll = 0
-        self.rounds = rounds 
+        self.rolls = []
+        self.rounds = int(rounds) 
         self.coverage = False
         self.field_hit = False 
+        self.strategy = [""]
 
+        #set randominization
         seed_value = random.randrange(sys.maxsize)
         random.seed(seed_value)
         self.play_hand()
@@ -39,6 +42,7 @@ class Craps():
 
     def before_point(self) -> None:
         self.roll = self.roll_dice()
+        self.rolls.append(self.roll)
         
         if(self.roll in [7,11]):
             self.bank_roll = self.bank_roll + self.table['pass'] * 2
@@ -51,6 +55,8 @@ class Craps():
 
     def after_point(self) -> None: 
         self.roll = self.roll_dice()
+        self.rolls.append(self.roll)
+
         if(self.roll == 7):
             self.restart(False)
             return 
@@ -138,7 +144,7 @@ class Craps():
         
         for idx in self.table:
             self.table[idx] = 0 
-     
+    
     def play_hand(self):
         if(self.rounds == 0):
             return
