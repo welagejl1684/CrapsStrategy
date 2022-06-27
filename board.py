@@ -10,24 +10,23 @@ class Board():
         self.window.configure(background="black")
         self.colors = ["pink", "green", "yellow", "red"]
 
-
-
         self.time = 2500
         self.craps = craps.Craps(rounds, bankroll, strategy)
         self.disable_sound = sound
         
-        self.stats = "BANKROLL: {0} \nPOINT: {1}\n WIN: {2}\n BET: {3}\n ROUNDS LEFT: {4}"
         self.rolls_var = tk.StringVar()
         self.stats_var = tk.StringVar()
+        self.win_tracker = 0
         self.bet_var = []
+        self.board_gui = []
         self.rolls_tracker = {
             2: [],3: [],4: [],5: [],6: [],7: [],
             8: [],9: [],10: [],11: [],12: []
         }
+
         self.rolls_string = "2: {0}\n 3: {1}\n 4: {2}\n 5: {3}\n 6: {4}\n 7: {5}\n 8: {6}\n 9: {7}\n 10: {8}\n 11: {9}\n 12: {10}"
-        self.win_tracker = 0
         self.board_var = ["PASS:","4:","5:","6:","8:","9:","10:","FIELD:","COME:"]
-        self.board_gui = []
+        self.stats = "BANKROLL: {0} \nPOINT: {1}\n WIN: {2}\n BET: {3}\n ROUNDS LEFT: {4}"
         
         self.create_frames()
         self.set_board()
@@ -36,6 +35,9 @@ class Board():
         if(not self.disable_sound):
             playsound('sounds/diceroll.wav')
         
+        if(self.craps.get_is_done()):
+            return
+
         self.craps.play_hand()
 
         self.window.after(self.time, self.display_game)
@@ -45,6 +47,9 @@ class Board():
         if(not self.disable_sound):
             playsound('sounds/diceroll.wav')
         
+                
+        if(self.craps.get_is_done()):
+            return
         self.craps.play_hand()
         
         win_amt = self.craps.get_stats()[2]
@@ -64,24 +69,41 @@ class Board():
     
     def update(self):   
         table = self.craps.get_table()
+        is_resesting = self.craps.get_is_reseting()
+
         for idx in range(0, len(self.board_gui)):
             place, bet = self.board_gui[idx]
             bet.set(table[idx])
 
         self.update_roll_tracker()
-        self.update_stats()
+        self.update_stats(is_resesting)
         return
 
     def update_roll_tracker(self):
-        self.rolls_tracker[self.craps.get_roll()].append("*")
         temp = []
+        reset = False
+
         for idx in self.rolls_tracker:
-            temp.append(''.join(self.rolls_tracker[idx])) 
-        
+            if(len(self.rolls_tracker[idx]) >= 25):
+                reset = True
+
+        if reset:
+            for idx in self.rolls_tracker:
+                self.rolls_tracker[idx] = []
+            for idx in self.rolls_tracker:
+                temp.append(''.join(self.rolls_tracker[idx])) 
+        else:
+            self.rolls_tracker[self.craps.get_roll()].append("*")
+            for idx in self.rolls_tracker:
+                temp.append(''.join(self.rolls_tracker[idx])) 
+            
         rolls = self.rolls_string.format(*temp)
         self.rolls_var.set(rolls)
 
-    def update_stats(self):
+    def update_stats(self, reset):
+        if reset:
+            self.win_tracker = 0
+
         stat = self.stats.format(*self.craps.get_stats())
         self.stats_var.set(stat)
 
@@ -109,7 +131,7 @@ class Board():
 
         self.text_stats = tk.Label(self.stats_frame, textvariable = self.stats_var, bg='black', fg='green')
         self.text_stats.grid(row=1, column=1)
-        self.update_stats()
+        self.update_stats(False)
 
     def create_frames(self):
         self.table_frame = tk.Frame(self.window)

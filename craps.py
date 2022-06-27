@@ -1,3 +1,4 @@
+from pickle import FALSE
 import sys 
 import random
 import time
@@ -19,6 +20,8 @@ class Craps():
         self.coverage = False
         self.field_hit = False 
         self.strategy = [""]
+        self.is_reseting = False
+        self.is_done = False
 
         #set randominization
         seed_value = random.randrange(sys.maxsize)
@@ -32,15 +35,16 @@ class Craps():
             self.bet = self.bet + amount 
 
     roll_dice = lambda self: random.randint(2, 12)  
-    
     get_table = lambda self: [self.table[idx] for idx in self.table]
-    
     get_roll = lambda self: self.roll
+    get_is_reseting = lambda self: self.is_reseting
+    get_is_done = lambda self: self.is_done
 
     def get_stats(self):
         return [self.bank_roll, self.point, self.win, self.bet, self.rounds]
 
     def before_point(self) -> None:
+        self.is_reseting = False
         self.roll = self.roll_dice()
         self.rolls.append(self.roll)
         
@@ -59,6 +63,7 @@ class Craps():
 
         if(self.roll == 7):
             self.restart(False)
+            self.is_reseting = True
             return 
         
         self.payout()
@@ -96,6 +101,7 @@ class Craps():
         if(self.roll == self.point):
             self.bank_roll = self.bank_roll + self.table['pass'] * 2 
             self.restart(True)
+            self.is_reseting = True
 
     def field_farm(self) -> None:
         for idx in self.table:
@@ -147,6 +153,7 @@ class Craps():
     
     def play_hand(self):
         if(self.rounds == 0):
+            self.is_done = True
             return
 
         if(self.point != 0):
@@ -156,6 +163,6 @@ class Craps():
             self.before_point()    
         
         if(self.bank_roll <= 0):
-            print("FAILURE")
+            self.is_done = True
             return
              
