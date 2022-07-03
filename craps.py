@@ -18,10 +18,10 @@ class Craps():
         self.rolls = []
         self.rounds = int(rounds) 
         self.coverage = False
-        self.field_hit = False 
-        self.strategy = [""]
+        self.field_hit = False
         self.is_reseting = False
         self.is_done = False
+        self.strategy = strategy
 
         #set randominization
         seed_value = random.randrange(sys.maxsize)
@@ -67,9 +67,7 @@ class Craps():
             return 
         
         self.payout()
-        
-        if(not self.coverage and self.field_hit and self.point != 0):
-            self.field_farm()
+        self.strategy.do_strategy()
               
     
     def payout(self) -> None:
@@ -104,17 +102,7 @@ class Craps():
             self.is_reseting = True
 
     def field_farm(self) -> None:
-        for idx in self.table:
-            if(idx not in  ['field','pass', str(self.point)] and self.table[idx] == 0):
-                if(idx in ['4', '5', '9', '10']):
-                    self.place_bet([idx], 5)  
-                else:
-                    self.place_bet([idx], 6)
-                break 
-        
-        for idx in self.table:
-            if(idx not in ['field', 'pass'] and self.table[idx] == 0):
-                return
+
 
         self.coverage = True         
 

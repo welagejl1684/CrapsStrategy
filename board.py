@@ -1,19 +1,20 @@
 from cgitb import text
 from playsound import playsound
+from strategy import Strategy
 import tkinter as tk
 import craps
 
 class Board():
-    def __init__(self, rounds, bankroll, strategy, sound):
+    def __init__(self, rounds, bankroll, strat_val, sound):
         self.window = tk.Tk()
         self.window.geometry("1000x500")
         self.window.configure(background="black")
         self.colors = ["pink", "green", "yellow", "red"]
 
         self.time = 2500
-        self.craps = craps.Craps(rounds, bankroll, strategy)
         self.disable_sound = sound
         
+        self.gamb_method = Strategy()
         self.rolls_var = tk.StringVar()
         self.stats_var = tk.StringVar()
         self.win_tracker = 0
@@ -28,7 +29,10 @@ class Board():
         self.board_var = ["PASS:","4:","5:","6:","8:","9:","10:","FIELD:","COME:"]
         self.stats = "BANKROLL: {0} \nPOINT: {1}\n WIN: {2}\n BET: {3}\n ROUNDS LEFT: {4}"
         
+        self.gamb_method.set_strategy(strat_val)
         self.create_frames()
+
+        self.craps = craps.Craps(rounds, bankroll, self.gamb_method)
         self.set_board()
         self.update()
         

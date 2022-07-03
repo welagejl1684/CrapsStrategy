@@ -1,6 +1,7 @@
 from cgitb import text
 from xmlrpc.client import Boolean
 from playsound import playsound 
+from strategy import Strategy_Name
 import tkinter as tk
 from turtle import color
 import board
@@ -13,7 +14,7 @@ class Options():
         self.window.configure(bg="black")
         self.window.title("Play Options")
 
-        self.options_list = ["2-field", "2-field with push", "5-9 parley"]
+        self.options_list = ["Farm", "Come", "Cross", "Parley"]
 
         self.o_strat = tk.StringVar()
         self.label_strat = tk.StringVar()
@@ -66,8 +67,18 @@ class Options():
     def start(self):
         if(self.validate(self.bet_amount) and self.validate(self.rounds)):
             self.window.destroy()
-            board.Board(self.rounds.get(), self.bet_amount.get(), self.o_strat.get(), self.disable_sound.get())
+            board.Board(self.rounds.get(), self.bet_amount.get(), self.strat_enum(), self.disable_sound.get())
 
+    def strat_enum(self):
+        val = self.o_strat.get()
+        if val == "Farm":
+            return Strategy_Name.FARM
+        if val == "Come":
+            return Strategy_Name.COME
+        if val == "Cross":
+            return Strategy_Name.CROSS
+        if val == "Parley":
+            return Strategy_Name.FARM
 
     def validate(self, var) -> Boolean:
         value = str(var.get())
